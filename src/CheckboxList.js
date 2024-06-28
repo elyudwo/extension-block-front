@@ -90,7 +90,99 @@ function CheckboxList() {
     await updateServerExtension(removedExtension, 'DELETE');
   };
 
+  return (
+    <div>
+      <FixedItemsList
+        items={FIXED_ITEMS}
+        checkedItems={checkedItems}
+        onCheckboxChange={handleCheckboxChange}
+      />
+      <CustomItemsList
+        customItem={customItem}
+        onCustomItemChange={handleCustomItemChange}
+        onAddCustomItem={handleAddCustomItem}
+        customBoxItems={customBoxItems}
+        onRemoveCustomItem={handleRemoveCustomItem}
+        numCustomItems={numCustomItems}
+      />
+    </div>
+  );
 }
+
+const FixedItemsList = ({ items, checkedItems, onCheckboxChange }) => (
+  <div className="checkbox-container">
+    <h2>고정 확장자</h2>
+    <div className="checkbox-list">
+      {items.map((item, index) => (
+        <div key={index} className="checkbox-item">
+          {item}
+          <input
+            type="checkbox"
+            checked={checkedItems[index]}
+            onChange={() => onCheckboxChange(index)}
+          />
+        </div>
+      ))}
+    </div>
+  </div>
+);
+
+const CustomItemInput = ({
+  customItem,
+  onCustomItemChange,
+  onAddCustomItem
+}) => (
+  <div className="custom-item-input">
+    <input
+      type="text"
+      value={customItem}
+      onChange={onCustomItemChange}
+      placeholder="확장자를 입력하세요 (최대 20자)"
+      maxLength={20}
+    />
+    <button onClick={onAddCustomItem}>확장자 추가</button>
+  </div>
+);
+
+const CustomBox = ({
+  customBoxItems,
+  onRemoveCustomItem
+}) => (
+  <div className="custom-box">
+    {customBoxItems.map((item, index) => (
+      <div key={index} className="custom-box-item">
+        {item}
+        <button className="remove-button" onClick={() => onRemoveCustomItem(index)}>X</button>
+      </div>
+    ))}
+  </div>
+);
+
+const CustomItemsList = ({
+  customItem,
+  onCustomItemChange,
+  onAddCustomItem,
+  customBoxItems,
+  onRemoveCustomItem,
+  numCustomItems
+}) => (
+  <div>
+    <div className="checkbox-container">
+    <h2>커스텀 확장자</h2>
+    <CustomItemInput
+      customItem={customItem}
+      onCustomItemChange={onCustomItemChange}
+      onAddCustomItem={onAddCustomItem}
+    />
+    <p>현재 {numCustomItems}개의 확장자가 추가되었습니다. (최대 200개)</p>
+    </div>
+    <CustomBox
+      customBoxItems={customBoxItems}
+      onRemoveCustomItem={onRemoveCustomItem}
+    />
+  </div>
+);
+
 
 
 export default CheckboxList;
