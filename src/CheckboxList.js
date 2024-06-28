@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import './CheckboxList.css';
 
-
 const API_BASE_URL = 'http://assignment-env.eba-3kmurjqx.ap-northeast-2.elasticbeanstalk.com/v1';
 const API_KEY = 'server';
 const FIXED_ITEMS = ['bat', 'cmd', 'com', 'cpl', 'exe', 'scr', 'js'];
@@ -13,6 +12,7 @@ function CheckboxList() {
   const [customItems, setCustomItems] = useState([]);
   const [customBoxItems, setCustomBoxItems] = useState([]);
   const [numCustomItems, setNumCustomItems] = useState(0);
+  const [errorMessage, setErrorMessage] = useState(''); // State variable for error message
 
   useEffect(() => {
     fetchInitialCheckedItems();
@@ -46,8 +46,10 @@ function CheckboxList() {
           data: { key: API_KEY, extension }
         });
       }
+      setErrorMessage(''); // Clear error message on success
     } catch (error) {
       console.error(`Error ${method === 'PUT' ? 'inserting' : 'deleting'} extension:`, error);
+      alert(`Error ${method === 'PUT' ? 'inserting' : 'deleting'} extension: ${error.message}`);
     }
   };
 
@@ -92,6 +94,7 @@ function CheckboxList() {
 
   return (
     <div>
+      {errorMessage && <div className="error-message">{errorMessage}</div>}
       <FixedItemsList
         items={FIXED_ITEMS}
         checkedItems={checkedItems}
@@ -182,7 +185,5 @@ const CustomItemsList = ({
     />
   </div>
 );
-
-
 
 export default CheckboxList;
