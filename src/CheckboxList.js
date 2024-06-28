@@ -14,6 +14,29 @@ function CheckboxList() {
   const [customBoxItems, setCustomBoxItems] = useState([]);
   const [numCustomItems, setNumCustomItems] = useState(0);
 
+  useEffect(() => {
+    fetchInitialCheckedItems();
+  }, []);
+
+  const fetchInitialCheckedItems = async () => {
+    try {
+      const response = await axios.get(`${API_BASE_URL}/find/extension`, {
+        headers: { 'key': API_KEY }
+      });
+      const existingExtensions = response.data;
+
+      const initialCheckedItems = FIXED_ITEMS.map(item => existingExtensions.includes(item));
+      setCheckedItems(initialCheckedItems);
+
+      const filteredCustomItems = existingExtensions.filter(ext => !FIXED_ITEMS.includes(ext));
+      setCustomItems(filteredCustomItems);
+      setCustomBoxItems(filteredCustomItems);
+      setNumCustomItems(filteredCustomItems.length);
+    } catch (error) {
+      console.error('Error fetching initial checked items:', error);
+    }
+  };
+
 }
 
 
