@@ -37,6 +37,36 @@ function CheckboxList() {
     }
   };
 
+  const updateServerExtension = async (extension, method) => {
+    try {
+      if (method === 'PUT') {
+        await axios.put(`${API_BASE_URL}/insert/extension`, { key: API_KEY, extension });
+      } else if (method === 'DELETE') {
+        await axios.delete(`${API_BASE_URL}/delete/extension`, {
+          data: { key: API_KEY, extension }
+        });
+      }
+    } catch (error) {
+      console.error(`Error ${method === 'PUT' ? 'inserting' : 'deleting'} extension:`, error);
+    }
+  };
+
+  const handleCheckboxChange = async (index) => {
+    const newCheckedItems = [...checkedItems];
+    newCheckedItems[index] = !newCheckedItems[index];
+    setCheckedItems(newCheckedItems);
+
+    const extension = FIXED_ITEMS[index];
+    const method = newCheckedItems[index] ? 'PUT' : 'DELETE';
+    await updateServerExtension(extension, method);
+  };
+
+  const handleCustomItemChange = (e) => {
+    if (e.target.value.length <= 20) {
+      setCustomItem(e.target.value);
+    }
+  };
+
 }
 
 
