@@ -67,6 +67,29 @@ function CheckboxList() {
     }
   };
 
+  const handleAddCustomItem = async () => {
+    if (customItem.trim() !== '' && customItems.length < 200) {
+      const newCustomItem = customItem.trim();
+      const updatedCustomItems = [...customItems, newCustomItem];
+      setCustomItems(updatedCustomItems);
+      setCustomBoxItems(updatedCustomItems);
+      setCustomItem('');
+      setNumCustomItems(updatedCustomItems.length);
+      await updateServerExtension(newCustomItem, 'PUT');
+    } else {
+      alert('최대 200개의 확장자까지만 추가할 수 있습니다.');
+    }
+  };
+
+  const handleRemoveCustomItem = async (index) => {
+    const removedExtension = customItems[index];
+    const updatedCustomItems = customItems.filter((_, i) => i !== index);
+    setCustomItems(updatedCustomItems);
+    setCustomBoxItems(updatedCustomItems);
+    setNumCustomItems(updatedCustomItems.length);
+    await updateServerExtension(removedExtension, 'DELETE');
+  };
+
 }
 
 
