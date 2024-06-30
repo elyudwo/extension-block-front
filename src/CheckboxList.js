@@ -12,7 +12,7 @@ function CheckboxList() {
   const [customItems, setCustomItems] = useState([]);
   const [customBoxItems, setCustomBoxItems] = useState([]);
   const [numCustomItems, setNumCustomItems] = useState(0);
-  const [errorMessage, setErrorMessage] = useState(''); // State variable for error message
+  const [errorMessage, setErrorMessage] = useState(''); 
 
   useEffect(() => {
     fetchInitialCheckedItems();
@@ -47,9 +47,11 @@ function CheckboxList() {
         });
       }
       setErrorMessage(''); // Clear error message on success
+      return true; // Indicate success
     } catch (error) {
       console.error(`Error ${method === 'PUT' ? 'inserting' : 'deleting'} extension:`, error);
       alert(`Error ${method === 'PUT' ? 'inserting' : 'deleting'} extension: ${error.message}`);
+      return false; // Indicate failure
     }
   };
 
@@ -70,16 +72,38 @@ function CheckboxList() {
   };
 
   const handleAddCustomItem = async () => {
-    if (customItem.trim() !== '' && customItems.length < 200) {
-      const newCustomItem = customItem.trim();
-      const updatedCustomItems = [...customItems, newCustomItem];
-      setCustomItems(updatedCustomItems);
-      setCustomBoxItems(updatedCustomItems);
-      setCustomItem('');
-      setNumCustomItems(updatedCustomItems.length);
-      await updateServerExtension(newCustomItem, 'PUT');
-    } else {
-      alert('최대 200개의 확장자까지만 추가할 수 있습니다.');
+    const newCustomItem = customItem.trim();
+  
+    if (newCustomItem === '') {
+      return;
+    }
+  
+    if (customItems.length >= 200) {
+      alert('커스텀 확장자는 최대 200개의 확장자까지만 추가할 수 있습니다.');
+      return;
+    }
+
+    if(FIXED_ITEMS.includes(newCustomItem)) {
+      alert('고정 확장자에 존재하는 확장자는 커스텀 확장자로 추가할 수 없습니다.');
+      return;
+    }
+  
+    if (customItems.includes(newCustomItem)) {
+      alert('이미 존재하는 확장자입니다.');
+      return;
+    }
+  
+    try {
+      const success = await updateServerExtension(newCustomItem, 'PUT');
+      if (success) {
+        const updatedCustomItems = [...customItems, newCustomItem];
+        setCustomItems(updatedCustomItems);
+        setCustomBoxItems(updatedCustomItems);
+        setCustomItem('');
+        setNumCustomItems(updatedCustomItems.length);
+      }
+    } catch (error) {
+      alert(`서버 확장자 추가 중 오류 발생: ${error.message}`);
     }
   };
 
@@ -171,13 +195,13 @@ const CustomItemsList = ({
 }) => (
   <div>
     <div className="checkbox-container">
-    <h2>커스텀 확장자</h2>
-    <CustomItemInput
-      customItem={customItem}
-      onCustomItemChange={onCustomItemChange}
-      onAddCustomItem={onAddCustomItem}
-    />
-    <p>현재 {numCustomItems}개의 확장자가 추가되었습니다. (최대 200개)</p>
+      <h2>커스텀 확장자</h2>
+      <CustomItemInput
+        customItem={customItem}
+        onCustomItemChange={onCustomItemChange}
+        onAddCustomItem={onAddCustomItem}
+      />
+      <p>현재 {numCustomItems}개의 확장자가 추가되었습니다. (최대 200개)</p>
     </div>
     <CustomBox
       customBoxItems={customBoxItems}
