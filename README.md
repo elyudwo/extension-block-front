@@ -39,3 +39,21 @@
 **해결**
 - 커스텀 확장자를 추가하기 전, 현재 커스텀 확장자에 존재하는 확장자인지 확인하고 존재할 경우 알림 창을 띄워 해결했습니다.
 ![image](https://github.com/elyudwo/extension-block-server/assets/97587573/4e2b0fdf-0c8b-401e-95bb-452d1d866cda)
+
+## 커스텀 확장자를 200개 초과해서 추가하는 경우
+
+**해결**
+- 커스텀 확장자를 추가하기 전, (전체 확장자 - 고정 확장자) >= 200 일 경우 예외 발생
+
+```java
+private void validateExtensionCount(InsertExtensionDto dto) {
+    List<String> list = findExtension(dto.getKey());
+    List<String> customExtensions = list.stream()
+            .filter(ext -> !ExtensionBlockService.FIXED_ITEMS.contains(ext))
+            .toList();
+
+    if (customExtensions.size() >= 200) {
+        throw new RuntimeException("커스텀 확장자는 200개 까지만 추가할 수 있어요.");
+    }
+}
+```
